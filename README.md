@@ -130,7 +130,7 @@ else:
         result = scraped['result']
         print "Found %d applications from %s to %s" % (len(result), scraped['from'], scraped['to'])
         app = result[0]
-        updated = scraper_obj.update_application(app)
+        updated = scraper_obj.get_application_details(app)
         if 'scrape_error' not in updated:
             print 'Updated first full record from %s' % scraper
             print app

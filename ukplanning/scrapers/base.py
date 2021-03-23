@@ -337,7 +337,7 @@ class BaseScraper(object): # scraper template class to be subclassed by all chil
         applic['authority'] = self.authority_name
         applic['source_url'] = self.search_url
 
-    def update_application(self, applic):
+    def get_application_details(self, applic):
         """updates an application record in place, preserving any existing fields which are not 
         returned from the remote source this time around
         result is always a dict with a non-empty 'record' if successful 
@@ -647,7 +647,7 @@ class DateScraper(BaseScraper): # for those sites that can return applications b
         current = start
         ok_current = start
         full_result = []
-        while len(full_result) < self.min_id_goal and ((not move_forward and current >= target) or (move_forward and current <= target)): 
+        while len(full_result) < self.min_id_goal and ((not move_forward and current >= target) or (move_forward and current <= target)):
             if not move_forward:
                 next = current - timedelta(days=self.batch_size-1)
                 if next < self.min_sequence:

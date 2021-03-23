@@ -27,12 +27,13 @@ import pkgutil
 
 logger = logging.getLogger(__name__)
 
-def run_scraper(scraper_name, function_name = None, *args, **kwargs):
+
+def run_scraper(scraper_name, function_name=None, *args, **kwargs):
     """ instantiate a scraper by name and run one of its functions with the supplied arguments
     "log_level", "log_directory" are named arguments passed to get_scraper
     any other arguments go to the function"""
     newargs = {}
-    accept = ['log_level', 'log_directory', 'log_name' ]
+    accept = ['log_level', 'log_directory', 'log_name']
     for x in [x for x in kwargs.keys() if x in accept]:
         newargs[x] = kwargs.pop(x)
     this_scraper = get_scraper(scraper_name, **newargs)
@@ -41,7 +42,8 @@ def run_scraper(scraper_name, function_name = None, *args, **kwargs):
     if function_name:
         return getattr(this_scraper, function_name)(*args, **kwargs)
     else:
-        return this_scraper(*args, **kwargs) # invokes __call__ method of class instance
+        return this_scraper(*args, **kwargs)  # invokes __call__ method of class instance
+
 
 def get_scraper(scraper_name, **kwargs):
     """ instantiate a scraper by name using the supplied arguments
@@ -51,11 +53,12 @@ def get_scraper(scraper_name, **kwargs):
     if not this_class:
         raise AttributeError('cannot find class for: %s' % scraper_name)
     newargs = {}
-    accept = ['log_level', 'log_directory', 'log_name' ]
+    accept = ['log_level', 'log_directory', 'log_name']
     for x in [x for x in kwargs.keys() if x in accept]:
         newargs[x] = kwargs.pop(x)
-    return this_class.create(**newargs) # get singleton instance, returns None if already exists
-    
+    return this_class.create(**newargs)  # get singleton instance, returns None if already exists
+
+
 def get_class(module_name, class_name, parent_class=BaseScraper):
     this_obj = None
     try:
@@ -68,19 +71,21 @@ def get_class(module_name, class_name, parent_class=BaseScraper):
     else:
         return this_obj
 
+
 def get_scraper_class(scraper_name, parent_class=BaseScraper, include_disabled=False):
     ' return a valid scraper class if the name matches '
     package = scrapers
     prefix = package.__name__ + "."
     for importer, modname, ispkg in pkgutil.walk_packages(package.__path__, prefix):
         if not ispkg:
-            #module = __import__(modname, fromlist="dummy")
+            # module = __import__(modname, fromlist="dummy")
             module = importlib.import_module(modname)
             class_obj = get_module_scraper_class(module, scraper_name, parent_class, include_disabled)
             if class_obj:
-				return class_obj
+                return class_obj
     return None
-    
+
+
 def all_scraper_classes(parent_class=BaseScraper, include_disabled=False):
     ' get a dict of all scraper classes in all sub-packages - where keys are authority names, values are classes '
     result = {}
@@ -88,12 +93,13 @@ def all_scraper_classes(parent_class=BaseScraper, include_disabled=False):
     prefix = package.__name__ + "."
     for importer, modname, ispkg in pkgutil.walk_packages(package.__path__, prefix):
         if not ispkg:
-            #module = __import__(modname, fromlist="dummy")
+            # module = __import__(modname, fromlist="dummy")
             module = importlib.import_module(modname)
             class_dict = get_scraper_classes(module, parent_class, include_disabled)
             result.update(class_dict)
     return result
-    
+
+
 def all_scraper_names(parent_class=BaseScraper, include_disabled=False):
     ' get a list of all scraper class names in all sub-packages - where values are authority names '
     result = []
@@ -101,17 +107,18 @@ def all_scraper_names(parent_class=BaseScraper, include_disabled=False):
     prefix = package.__name__ + "."
     for importer, modname, ispkg in pkgutil.walk_packages(package.__path__, prefix):
         if not ispkg:
-            #module = __import__(modname, fromlist="dummy")
+            # module = __import__(modname, fromlist="dummy")
             module = importlib.import_module(modname)
             name_list = get_scraper_names(module, parent_class, include_disabled)
             result.extend(name_list)
     return result
-    
+
+
 def all_scraper_attributes(parent_class=BaseScraper):
     """ get a dict of all scrapers in all sub-packages - 
     where keys are authority names, values are dicts of relevant attributes """
     result = {}
-    classes = all_scraper_classes(parent_class, True) # gets disabled scrapers
+    classes = all_scraper_classes(parent_class, True)  # gets disabled scrapers
     for k, v in classes.items():
         result[k] = {
             'scraper': v._authority_name,
@@ -126,7 +133,8 @@ def all_scraper_attributes(parent_class=BaseScraper):
             'comment': v._comment if v._comment else ''
         }
     return result
-    
+
+
 def all_scraper_modules(parent_class=BaseScraper, include_disabled=False):
     ' get a list of names of all modules with valid scrapers in  '
     result = []
@@ -134,7 +142,7 @@ def all_scraper_modules(parent_class=BaseScraper, include_disabled=False):
     prefix = package.__name__ + "."
     for importer, modname, ispkg in pkgutil.walk_packages(package.__path__, prefix):
         if not ispkg:
-            #module = __import__(modname, fromlist="dummy")
+            # module = __import__(modname, fromlist="dummy")
             module = importlib.import_module(modname)
             has_scrapers = has_scraper_classes(module, parent_class, include_disabled)
             if has_scrapers:
@@ -152,7 +160,8 @@ def all_scraper_modules(parent_class=BaseScraper, include_disabled=False):
                 class_dict = get_scraper_classes(obj, parent_class)
                 result.update(class_dict)
     return result"""
-    
+
+
 def get_scraper_classes(module, parent_class=BaseScraper, include_disabled=False):
     ' get a dict of scraper classes in a module - where keys are authority names, values are classes '
     ' note abstract classes are not returned because they have no defined authority name '
@@ -165,7 +174,8 @@ def get_scraper_classes(module, parent_class=BaseScraper, include_disabled=False
             if authority and (include_disabled or not disabled):
                 result[authority] = this_obj
     return result
-	
+
+
 def get_scraper_names(module, parent_class=BaseScraper, include_disabled=False):
     ' get a list of valid scraper names in a module '
     ' note abstract classes are not returned because they have no defined authority name '
@@ -178,7 +188,8 @@ def get_scraper_names(module, parent_class=BaseScraper, include_disabled=False):
             if authority and (include_disabled or not disabled):
                 result.append(authority)
     return result
-    
+
+
 def has_scraper_classes(module, parent_class=BaseScraper, include_disabled=False):
     ' flag if a module contains any valid scraper classes '
     for name in dir(module):
@@ -189,7 +200,8 @@ def has_scraper_classes(module, parent_class=BaseScraper, include_disabled=False
             if authority and (include_disabled or not disabled):
                 return True
     return False
-	
+
+
 def get_module_scraper_class(module, scraper_name, parent_class=BaseScraper, include_disabled=False):
     ' get a named valid scraper class it it exists in a module '
     for name in dir(module):
@@ -200,16 +212,17 @@ def get_module_scraper_class(module, scraper_name, parent_class=BaseScraper, inc
             if authority and authority == scraper_name and (include_disabled or not disabled):
                 return this_obj
     return None
-	
+
+
 if __name__ == "__main__":
     import sys
     import argparse
     import time
-    
-    actions = [ 'fetch_application', 'gather_ids', 'show_application', 'get_max_sequence' ]
 
-    log_choices = [ c for c in logging._levelNames.keys() if not isinstance(c, int) ]
-    
+    actions = ['fetch_application', 'gather_ids', 'show_application', 'get_max_sequence']
+
+    log_choices = [c for c in logging._levelNames.keys() if not isinstance(c, int)]
+
     parser = argparse.ArgumentParser(description='Run a planning scraper')
     parser.add_argument("scraper", help="name of the scraper")
     parser.add_argument("-l", "--level", help="log level", default='INFO', choices=log_choices)
@@ -219,15 +232,14 @@ if __name__ == "__main__":
     # note the optional parameters all refer to the scrapers which each have their own store / log files at default INFO level
 
     if args.scraper:
-    	# this sets up a default console logger at WARNING level
-	    logging.basicConfig(format='%(name)s-%(levelname)s[%(asctime)s]: %(message)s', 
-		    datefmt='%Y-%m-%dT%H:%M:%S', level=logging.WARNING)
-	    # note need to explicitly set the root stream handler logging level to WARNING
-	    handlers = logging.getLogger('').handlers
-	    for h in handlers:
-	        h.setLevel(logging.WARNING)
-	
-	    kwargs = { 'log_level': args.level, 'log_directory': args.logdir  }
-	    aargs = args.action[1:]
-	    print run_scraper(args.scraper, args.action[0], *aargs, **kwargs)
-	
+        # this sets up a default console logger at WARNING level
+        logging.basicConfig(format='%(name)s-%(levelname)s[%(asctime)s]: %(message)s',
+                            datefmt='%Y-%m-%dT%H:%M:%S', level=logging.WARNING)
+        # note need to explicitly set the root stream handler logging level to WARNING
+        handlers = logging.getLogger('').handlers
+        for h in handlers:
+            h.setLevel(logging.WARNING)
+
+        kwargs = {'log_level': args.level, 'log_directory': args.logdir}
+        aargs = args.action[1:]
+        print run_scraper(args.scraper, args.action[0], *aargs, **kwargs)

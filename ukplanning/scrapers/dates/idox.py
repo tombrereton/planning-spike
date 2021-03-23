@@ -28,7 +28,7 @@ from .. import base
 
 class IdoxScraper(base.DateScraper):
 
-    data_start_target = '2007-12-01' 
+    data_start_target = '2021-01-01'
     # temporarily reduce collection period for all Idox scrapers - will extend it later 14/2/17
     
     min_id_goal = 300 # min target for application ids to fetch in one go
