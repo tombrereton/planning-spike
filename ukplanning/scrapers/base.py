@@ -74,7 +74,7 @@ class BaseScraper(object): # scraper template class to be subclassed by all chil
     
     # default public class variables for all scrapers
     data_start_target = None # the earliest sequence value to work back to (date string or integer)
-    min_id_goal = 600 # min target for application ids to fetch in one go
+    min_id_goal = 1 # min target for application ids to fetch in one go
     logger = None
     batch_size = None # number of dates/sequences to ask for in successive requests to target web site
     current_span = None # overall number of dates/sequences requested if gathering the most recent or highest sequence

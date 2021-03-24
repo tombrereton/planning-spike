@@ -31,7 +31,7 @@ class IdoxScraper(base.DateScraper):
     data_start_target = '2021-01-01'
     # temporarily reduce collection period for all Idox scrapers - will extend it later 14/2/17
     
-    min_id_goal = 300 # min target for application ids to fetch in one go
+    min_id_goal = 1 # min target for application ids to fetch in one go
     _disabled = False # default, can be selectively disabled below
     _scraper_type = 'Idox'
     _date_from_field = 'date(applicationReceivedStart)'
@@ -145,7 +145,8 @@ class IdoxScraper(base.DateScraper):
         response = scrapeutils.submit_form(self.br)
         
         page_count = 0
-        max_pages = (2 * self.min_id_goal / 10) + 20 # guard against infinite loop
+        # max_pages = (2 * self.min_id_goal / 10) + 20 # guard against infinite loop
+        max_pages = 1 # guard against infinite loop
         while response and page_count < max_pages:
             html = response.read()
             url = response.geturl()
