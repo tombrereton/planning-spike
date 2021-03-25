@@ -3,21 +3,28 @@ from ukplanning import run
 import json
 import time
 from ukplanning.scrapers.dates import idox
+from ukplanning.scrapers import base
 import collections
+import sys
 
-# council = 'Chelmsford'
-scraper_dict = run.all_scraper_classes(parent_class=idox.IdoxScraper)
+scraper_dict = run.all_scraper_classes(parent_class=base.DateScraper)
+# scraper_dict = run.all_scraper_classes(parent_class=base.ListScraper)
+# scraper_dict = run.all_scraper_classes(parent_class=base.PeriodScraper)
 ordered_scrapers = collections.OrderedDict(sorted(scraper_dict.items()))
-# if not council in scraper_dict.keys():
-#     print 'Scraper class not yet implemented for %s' % council
-# else:
-timingLogFile = "./logs/timings.log"
 
+timingLogFile = "./logs/timings.log"
+plannings = []
 count = 0
+
+totalScrapers = '{0} total scrapers found for type {1}\n'.format(len(scraper_dict), base.DateScraper.__name__)
+print totalScrapers
+with open(timingLogFile, 'a') as f:
+    f.write(totalScrapers)
+
 for council in ordered_scrapers:
     try:
         count = count + 1
-        foundScraper = '{0} scraper, count {1}\n'.format(council, count)
+        foundScraper = '{0} scraper, number {1}\n'.format(council, count)
         print foundScraper
         with open(timingLogFile, 'a') as f:
             f.write(foundScraper)
@@ -36,7 +43,6 @@ for council in ordered_scrapers:
             with open(timingLogFile, 'a') as f:
                 f.write(timerLog)
 
-            plannings = []
             for planningId in planningIds[:1]:
 
                 start = time.time()
@@ -46,9 +52,7 @@ for council in ordered_scrapers:
 
                 if 'scrape_error' not in detailPage:
                     record = detailPage["record"]
-                    timerLog = '{0} scraper, planning record {01} fetched in {2:6.2f} seconds\n'.format(council,
-                                                                                                        record["uid"],
-                                                                                                        elapsed)
+                    timerLog = '{0} scraper, planning record {1} fetched in {2:6.2f} seconds\n'.format(council, record["uid"], elapsed)
                     print timerLog
                     with open(timingLogFile, 'a') as f:
                         f.write(timerLog)
@@ -68,8 +72,8 @@ for council in ordered_scrapers:
             print error
             with open(timingLogFile, 'a') as f:
                 f.write(error)
-    except:
-        exc = '{0} scraper, threw exception'.format(council)
+    except Exception as e:
+        exc = '{0} scraper, Error, threw exception {1}\n'.format(council, e)
         print exc
         with open(timingLogFile, 'a') as f:
             f.write(exc)

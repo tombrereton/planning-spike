@@ -173,7 +173,7 @@ class IdoxScraper(base.DateScraper):
                 break
                 
         if page_count >= max_pages:
-            self.logger.warning("Too many page requests - %d - probable run away loop" % page_count)
+            self.logger.warning("(Set Max Pages to 1 TB): Too many page requests - %d - probable run away loop" % page_count)
        
         return final_result
 
